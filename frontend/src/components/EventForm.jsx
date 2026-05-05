@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { emptyEvent, validateEventForm } from '../utils/validateEventForm';
+import toast from 'react-hot-toast';
 
 function EventForm({ onSubmit }) {
   const [formData, setFormData] = useState(emptyEvent);
   const [errors, setErrors] = useState({});
-  const [submitMessage, setSubmitMessage] = useState('');
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -26,10 +26,10 @@ function EventForm({ onSubmit }) {
     if (result.success) {
       setFormData(emptyEvent);
       setErrors({});
-      setSubmitMessage('Event added to the list.');
+      toast.success('Event added to the list.');
     } else {
       setErrors(result.errors);
-      setSubmitMessage(result.message);
+      toast.error(result.message);
     }
   };
 
@@ -37,7 +37,6 @@ function EventForm({ onSubmit }) {
     <form className="event-form" onSubmit={handleSubmit}>
       <h2>Add New Event</h2>
       <FormFields formData={formData} errors={errors} onChange={handleChange} />
-      {submitMessage && <p className="form-message">{submitMessage}</p>}
       <button type="submit" className="primary-btn">
         Create Event
       </button>

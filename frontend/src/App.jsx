@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import toast, { Toaster } from 'react-hot-toast';
 import { createEvent, deleteEvent, getEvents, updateEvent } from './api/eventApi';
 import EventForm from './components/EventForm';
 import EventList from './components/EventList';
@@ -24,7 +25,6 @@ function App() {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const loadEvents = async () => {
@@ -33,7 +33,7 @@ function App() {
       const result = await getEvents();
       setEvents(result.data);
     } catch (error) {
-      setMessage('Could not load events. Please check if backend is running.');
+      toast.error('Could not load events. Please check if backend is running.');
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ function App() {
     try {
       const result = await createEvent(eventData);
       setEvents((currentEvents) => [result.data, ...currentEvents]);
-      setMessage(result.message);
+      toast.success(result.message);
       return { success: true };
     } catch (error) {
       return {
@@ -66,7 +66,7 @@ function App() {
       );
       setSelectedEvent(result.data);
       setEditingEvent(null);
-      setMessage(result.message);
+      toast.success(result.message);
       return { success: true };
     } catch (error) {
       return {
@@ -77,23 +77,32 @@ function App() {
     }
   };
 
-  const handleDelete = async (id) => {
-    const shouldDelete = window.confirm('Delete this event?');
-    if (!shouldDelete) return;
-
-    try {
-      const result = await deleteEvent(id);
-      setEvents((currentEvents) => currentEvents.filter((event) => event._id !== id));
-      if (selectedEvent?._id === id) setSelectedEvent(null);
-      if (editingEvent?._id === id) setEditingEvent(null);
-      setMessage(result.message);
-    } catch (error) {
-      setMessage('Could not delete event');
-    }
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 700 }}>Delete this event?</p>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="danger-btn" onClick={async () => {
+            toast.dismiss(t.id);
+            try {
+              const result = await deleteEvent(id);
+              setEvents((currentEvents) => currentEvents.filter((event) => event._id !== id));
+              if (selectedEvent?._id === id) setSelectedEvent(null);
+              if (editingEvent?._id === id) setEditingEvent(null);
+              toast.success(result.message);
+            } catch (error) {
+              toast.error('Could not delete event');
+            }
+          }}>Delete</button>
+          <button className="light-btn" onClick={() => toast.dismiss(t.id)}>Cancel</button>
+        </div>
+      </div>
+    ), { duration: 5000, position: 'top-center' });
   };
 
   return (
     <main className="app-shell">
+      <Toaster toastOptions={{ style: { background: 'var(--color-card-bg)', color: 'var(--color-foreground)', border: '1px solid rgba(255,255,255,0.05)' } }} />
       <header className="topbar">
         <div>
           <p className="eyebrow">LNMIIT Sports Management</p>
@@ -101,8 +110,6 @@ function App() {
         </div>
         <span className="event-count">{events.length} Events</span>
       </header>
-
-      {message && <div className="notice">{message}</div>}
 
       <section className="workspace">
         <div className="form-panel">
