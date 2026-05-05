@@ -3,7 +3,13 @@ import EventCard from './EventCard';
 
 function EventList({ events, loading, onView, onEdit, onDelete }) {
   if (loading) {
-    return <p className="empty-state">Loading events...</p>;
+    return (
+      <div className="shimmer-grid">
+        <div className="shimmer-card"></div>
+        <div className="shimmer-card"></div>
+        <div className="shimmer-card"></div>
+      </div>
+    );
   }
 
   if (events.length === 0) {
