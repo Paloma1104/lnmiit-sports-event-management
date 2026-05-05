@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FormFields } from './EventForm';
 import { toDateInputValue, validateEventForm } from '../utils/validateEventForm';
+import toast from 'react-hot-toast';
 
 function EditEventForm({ event, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
@@ -8,7 +9,6 @@ function EditEventForm({ event, onSubmit, onCancel }) {
     eventDate: toDateInputValue(event.eventDate)
   });
   const [errors, setErrors] = useState({});
-  const [submitMessage, setSubmitMessage] = useState('');
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -29,7 +29,7 @@ function EditEventForm({ event, onSubmit, onCancel }) {
 
     if (!result.success) {
       setErrors(result.errors);
-      setSubmitMessage(result.message);
+      toast.error(result.message);
     }
   };
 
@@ -42,7 +42,6 @@ function EditEventForm({ event, onSubmit, onCancel }) {
         </button>
       </div>
       <FormFields formData={formData} errors={errors} onChange={handleChange} />
-      {submitMessage && <p className="form-message">{submitMessage}</p>}
       <button type="submit" className="primary-btn">
         Save Changes
       </button>
