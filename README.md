@@ -148,15 +148,3 @@ Then open the Vite URL shown in the terminal, usually:
 http://localhost:5173
 ```
 
-## 7. Viva Explanation Points
-
-- The project follows MERN architecture: React frontend, Express backend, MongoDB database, and Mongoose models.
-- `Event.js` defines the database schema and database-level validation.
-- `validateEvent.js` checks incoming request data before controller logic runs.
-- `eventController.js` keeps create, read, update, and delete logic separate from route definitions.
-- `eventRoutes.js` maps API URLs to controller functions.
-- The frontend is split into small components: form, list, card, details modal, and edit form.
-- Axios is used in `eventApi.js` so API calls stay separate from UI components.
-- Validation exists on both frontend and backend for better user experience and safer data.
-- The UI is practical and admin-style, suitable for a college management module.
-- The module can be extended later with registration, search, filtering, authentication, or participant management.
